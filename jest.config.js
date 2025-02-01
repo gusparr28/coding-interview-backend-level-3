@@ -1,6 +1,5 @@
 module.exports = {
-    transform: {
-    '^.+\\.(t|j)sx?$': '@swc/jest',
-    },
-   }
-   
+  "transform": {
+    "^.+\\.(ts|tsx)$": "ts-jest"
+  }
+};
