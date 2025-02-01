@@ -1,23 +1,25 @@
+import { type NodePgDatabase, drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 import { Environment } from "../environment";
 
 export class DBConnection {
     private pool: Pool;
 
-    private databaseUrl: string;
+    private client: NodePgDatabase | null = null;
 
     constructor() {
-        this.databaseUrl = new Environment().getDatabaseUrl();
         this.pool = new Pool({
-            connectionString: this.databaseUrl,
+            connectionString: new Environment().getDatabaseUrl(),
         });
+
+        this.client = drizzle(this.pool);
     }
 
-    getPool(): Pool {
-        if (!this.pool) {
-            throw new Error("Database pool not set");
+    getClient(): NodePgDatabase {
+        if (!this.client) {
+            throw new Error("Database client not set");
         }
 
-        return this.pool;
+        return this.client;
     }
 }

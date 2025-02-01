@@ -1,9 +1,9 @@
 import type { ItemsRepository } from "../../models/repositories/items.repository";
-import { Item } from "../../models/entities/item.entity";
 import { ItemDTO } from "../dtos/responses/item.dto";
 import { BusinessError } from "../../../common/errors/business.error";
 import type { CreateItemDTO } from "../dtos/requests/create-item.dto";
 import type { SelectItemUC } from "./select-item.uc";
+import { Item } from "../../models/entities/item.entity";
 
 export class UpdateItemUC {
     constructor(

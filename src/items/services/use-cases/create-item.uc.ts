@@ -1,8 +1,8 @@
 import type { ItemsRepository } from "../../models/repositories/items.repository";
 import type { CreateItemDTO } from "../dtos/requests/create-item.dto";
-import { Item } from "../../models/entities/item.entity";
 import { ItemDTO } from "../dtos/responses/item.dto";
 import { BusinessError } from "../../../common/errors/business.error";
+import { Item } from "../../models/entities/item.entity";
 
 export class CreateItemUC {
     constructor(private readonly itemsRepository: ItemsRepository) {}

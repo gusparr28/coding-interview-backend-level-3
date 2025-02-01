@@ -1,4 +1,4 @@
-import type { Item } from "../../../models/entities/item.entity";
+import { Item } from "../../../models/entities/item.entity";
 
 export class ItemDTO {
     id: number;

@@ -1,60 +1,40 @@
-import type { Pool } from "pg";
 import type { DBConnection } from "../../../database/connection";
-import type { Item } from "../entities/item.entity";
-import { ITEMS_QUERIES } from "./queries/items.queries";
+import { Item } from "../entities/item.entity";
+import { NodePgDatabase } from "drizzle-orm/node-postgres";
+import { ItemSchema } from "./schemas/item.schema";
+import { eq } from "drizzle-orm";
 
 export class ItemsRepository {
-    private pool: Pool;
+    private client: NodePgDatabase;
 
     constructor(private readonly dbConnection: DBConnection) {
-        this.pool = this.dbConnection.getPool();
+        this.client = this.dbConnection.getClient();
     }
 
     async save(item: Omit<Item, "id">): Promise<Item> {
-        try {
-            const result = await this.pool.query(ITEMS_QUERIES.SAVE_ITEM, [item.name, item.price]);
-
-            return result.rows[0];
-        } catch (error) {
-            throw new Error(error);
-        }
+        const result = await this.client.insert(ItemSchema).values(item).returning();
+        return result[0];
     }
 
     async selectAll(): Promise<Item[]> {
-        try {
-            const result = await this.pool.query(ITEMS_QUERIES.SELECT_ALL_ITEMS);
-
-            return result.rows;
-        } catch (error) {
-            throw new Error(error);
-        }
+        return await this.client.select().from(ItemSchema);
     }
 
     async selectById(item: Pick<Item, "id">): Promise<Item | null> {
-        try {
-            const result = await this.pool.query(ITEMS_QUERIES.SELECT_ITEM_BY_ID, [item.id]);
-
-            return result.rows[0];
-        } catch (error) {
-            throw new Error(error);
-        }
+        const result = await this.client.select().from(ItemSchema).where(eq(ItemSchema.id, item.id));
+        return result[0] ?? null;
     }
 
     async update(item: Item): Promise<Item> {
-        try {
-            const result = await this.pool.query(ITEMS_QUERIES.UPDATE_ITEM, [item.name, item.price, item.id]);
-
-            return result.rows[0];
-        } catch (error) {
-            throw new Error(error);
-        }
+        const result = await this.client
+            .update(ItemSchema)
+            .set({ name: item.name, price: item.price })
+            .where(eq(ItemSchema.id, item.id))
+            .returning();
+        return result[0];
     }
 
     async delete(item: Pick<Item, "id">): Promise<void> {
-        try {
-            await this.pool.query(ITEMS_QUERIES.DELETE_ITEM, [item.id]);
-        } catch (error) {
-            throw new Error(error);
-        }
+        await this.client.delete(ItemSchema).where(eq(ItemSchema.id, item.id));
     }
 }
